@@ -1,5 +1,6 @@
 import { Post, User } from "./models";
 import { connectToDb } from "./utils";
+import { unstable_noStore as noStore } from "next/cache";
 
 // TEMPORARY DATA
 // const users = [
@@ -43,6 +44,7 @@ export const getPost = async (slug) => {
 };
 
 export const getUser = async (id) => {
+  noStore();
   // THIS WAS USED WITH THE TEMPORARY DATA
   // return users.find((user) => user.id === parseInt(id));
 
@@ -52,7 +54,7 @@ export const getUser = async (id) => {
     return user;
   } catch (error) {
     console.log(error);
-    throw new Error("Failed to fetch user");
+    throw new Error(`Failed to fetch user: ${error.message}`);
   }
 };
 
