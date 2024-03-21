@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import styles from "./links.module.css";
 import NavLink from "./navLink/navLink";
 import Image from "next/image";
+import { handleLogout } from "@/lib/action";
 
 const links = [
   {
@@ -23,10 +24,11 @@ const links = [
     path: "/blog",
   },
 ];
-const Links = () => {
+const Links = ({ session }) => {
+  // gets session as a prop because this component is 'use client'
+  // we moved session to the parent component, navbar.jsx
   const [open, setOpen] = useState(false);
 
-  const session = true;
   const isAdmin = true;
   return (
     <div className={styles.container}>
@@ -34,10 +36,14 @@ const Links = () => {
         {links.map((link) => (
           <NavLink key={link.title} item={link} />
         ))}
-        {session ? (
+        {session?.user ? ( // checks if the user is logged in
           <>
-            {isAdmin && <NavLink item={{ title: "Admin", path: "./admin" }} />}
-            <button className={styles.logout}>Logout</button>
+            {session.user?.isAdmin && ( // checks if the user is an admin
+              <NavLink item={{ title: "Admin", path: "./admin" }} />
+            )}
+            <form action={handleLogout}>
+              <button className={styles.logout}>Logout</button>
+            </form>
           </>
         ) : (
           <NavLink item={{ title: "Login", path: "./login" }} />
@@ -52,7 +58,7 @@ const Links = () => {
         height={30}
         onClick={() => setOpen((prev) => !prev)}
       />
-      {open && (
+      {open && ( // checks if the menu is open
         <div className={styles.mobileLinks}>
           {links.map((link) => (
             <NavLink key={link.title} item={link} />
