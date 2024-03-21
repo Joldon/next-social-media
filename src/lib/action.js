@@ -9,8 +9,9 @@
  */
 
 import { revalidatePath } from "next/cache";
-import { Post } from "./models";
+import { Post, User } from "./models";
 import { connectToDb } from "./utils";
+import { signIn, signOut } from "./auth";
 
 export const addPost = async (formData) => {
   //   const title = formData.get("title");
@@ -43,6 +44,46 @@ export const deletePost = async (formData) => {
     await Post.findByIdAndDelete(id);
     console.log("deleted from db");
     revalidatePath("/blog");
+  } catch (error) {
+    console.log(error);
+    return { error: "Something went wrong" };
+  }
+};
+
+export const handleGithubLogin = async () => {
+  "use server";
+  await signIn("github");
+};
+
+export const handleLogout = async () => {
+  await signOut();
+};
+
+export const register = async (formData) => {
+  const { username, email, password, img, passwordRepeat } =
+    Object.fromEntries(formData);
+
+  if (passowrd !== passwordRepeat) {
+    return "password does not match";
+  }
+
+  try {
+    connectToDb();
+
+    const user = await User.findOne({ username });
+
+    if (user) {
+      return "Username already exists";
+    }
+
+    const newUser = new User({
+      username,
+      email,
+      password,
+      img,
+    });
+    await newUser.save();
+    console.log("saved to db");
   } catch (error) {
     console.log(error);
     return { error: "Something went wrong" };
