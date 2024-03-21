@@ -63,7 +63,7 @@ export const register = async (formData) => {
   const { username, email, password, img, passwordRepeat } =
     Object.fromEntries(formData);
 
-  if (passowrd !== passwordRepeat) {
+  if (password !== passwordRepeat) {
     return "password does not match";
   }
 
