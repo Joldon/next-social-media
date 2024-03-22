@@ -60,7 +60,7 @@ export const handleLogout = async () => {
   await signOut();
 };
 
-export const register = async (formData) => {
+export const register = async (previousState, formData) => {
   const { username, email, password, img, passwordRepeat } =
     Object.fromEntries(formData);
 
@@ -88,6 +88,8 @@ export const register = async (formData) => {
     });
     await newUser.save();
     console.log("saved to db");
+
+    return { success: true };
   } catch (error) {
     console.log(error);
     return { error: "Something went wrong" };
