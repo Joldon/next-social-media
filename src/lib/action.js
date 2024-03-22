@@ -96,13 +96,21 @@ export const register = async (previousState, formData) => {
   }
 };
 
-export const login = async (formData) => {
+export const login = async (previousState, formData) => {
+  // previousState is parameter from useFormState
   const { username, password } = Object.fromEntries(formData);
 
   try {
     await signIn("credentials", { username, password });
   } catch (error) {
     console.log(error);
-    return { error: "Something went wrong" };
+    if (error.message.includes("CredentialsSignin")) {
+      return { error: "Invalid username or password" };
+    }
+
+    // return { error: "Something went wrong" };
+    throw error; // re-throw the error because next-redirect intentionally throws an error
+    // with the above commented line. So we need to re-throw the error to make it work. (SOLUTION)
+    // here is the explanation https://nextjs.org/docs/app/api-reference/functions/redirect
   }
 };
