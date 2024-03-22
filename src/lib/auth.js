@@ -4,7 +4,36 @@
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import { connectToDb } from "./utils";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { User } from "./models"; // imports the User model from the models file
+import bcrypt from "bcryptjs";
+
+const login = async (credentials) => {
+  try {
+    connectToDb();
+    const user = await User.findOne({ username: credentials.username }); // finds the user by their username
+    // you can find the user in mongodb by their username and insert in form of credentials.username
+
+    if (!user) {
+      throw new Error("Wrong username or password");
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(
+      credentials.password,
+      user.password
+    );
+
+    if (!isPasswordCorrect) {
+      throw new Error("Wrong username or password");
+    }
+
+    return user;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to login");
+  }
+};
+
 export const {
   // below are the handlers for the authentication
   handlers: { GET, POST },
@@ -18,6 +47,16 @@ export const {
     GitHub({
       clientId: process.env.GITHUB_ID, // GITHUB_ID is the client ID from the GitHub OAuth app
       clientSecret: process.env.GITHUB_SECRET, // GITHUB_SECRET is the client secret from the GitHub OAuth app
+    }),
+    CredentialsProvider({
+      async authorize(credentials) {
+        try {
+          const user = await login(credentials);
+          return user;
+        } catch (error) {
+          return null;
+        }
+      },
     }),
   ],
   callbacks: {
