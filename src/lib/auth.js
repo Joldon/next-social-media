@@ -7,6 +7,7 @@ import { connectToDb } from "./utils";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { User } from "./models"; // imports the User model from the models file
 import bcrypt from "bcryptjs";
+import { authConfig } from "./auth.config";
 
 const login = async (credentials) => {
   try {
@@ -42,6 +43,10 @@ export const {
   signIn, // signIn is the default built-in function for the authentication from NextAuth
   signOut,
 } = NextAuth({
+  // all the properties and values of authConfig are passed as individual arguments to the NextAuth function.
+  // This allows the NextAuth function to receive the configuration options and use them for setting up the authentication functionality.
+  // By spreading the properties of authConfig, we can access and use those properties individually without explicitly referencing the authConfig object.
+  ...authConfig,
   providers: [
     // providers are the authentication providers that NextAuth uses to authenticate the user
     GitHub({
@@ -89,5 +94,8 @@ export const {
       }
       return true; // returns true if the user is successfully signed in
     },
+    // This line of code is accessing the callbacks property of an authConfig object.
+    // It is using the spread operator (...) to include all the properties of authConfig.callbacks in the current context.
+    ...authConfig.callbacks,
   },
 });
