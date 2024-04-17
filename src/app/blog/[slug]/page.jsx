@@ -26,13 +26,13 @@ const getData = async (slug) => {
 export const generateMetadata = async ({ params }) => {
   const { slug } = params;
   const post = await getPost(slug);
-  // // To fix the TypeError, I would add a null check before accessing the 'title' property of the 'post' object. BELOW
-  // if (!post) {
-  //   return {
-  //     title: "",
-  //     description: "",
-  //   };
-  // }
+  // To fix the TypeError, I would add a null check before accessing the 'title' property of the 'post' object. BELOW
+  if (!post) {
+    return {
+      title: "",
+      description: "",
+    };
+  }
   return {
     title: post.title,
     description: post.desc,
@@ -49,7 +49,7 @@ const SinglePostPage = async ({ params }) => {
   console.log(post);
   return (
     <div className={styles.container}>
-      {post.img && (
+      {post?.img && (
         <div className={styles.imgContainer}>
           <Image className={styles.img} src={post.img} alt="" fill />
         </div>
@@ -67,14 +67,14 @@ const SinglePostPage = async ({ params }) => {
             <span className={styles.detailTitle}>published</span>
             <span className={styles.detailValue}>
               {/* To fix the TypeError, added a null check before accessing the 'createdAt' property of the 'post' object. */}
-              {/* {post && post.createdAt && post.createdAt.toString().slice(0, 16)} */}
+              {post && post.createdAt && post.createdAt.toString().slice(0, 16)}
 
               {/* without null check */}
-              {post.createdAt.toString().slice(4, 16)}
+              {/* {post.createdAt.toString().slice(4, 16)} */}
             </span>
           </div>
         </div>
-        <div className={styles.content}>{post.desc}</div>
+        <div className={styles.content}>{post?.desc}</div>
       </div>
     </div>
   );
