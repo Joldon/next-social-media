@@ -17,9 +17,22 @@ const getData = async (slug) => {
   return res.json();
 };
 
+/**
+ * Generates metadata for a blog post based on the provided parameters.
+ * @param {Object} params - The parameters for generating metadata.
+ * @param {string} params.slug - The slug of the blog post.
+ * @returns {Promise<Object>} - A promise that resolves to an object containing the generated metadata.
+ */
 export const generateMetadata = async ({ params }) => {
   const { slug } = params;
   const post = await getPost(slug);
+  // // To fix the TypeError, I would add a null check before accessing the 'title' property of the 'post' object. BELOW
+  // if (!post) {
+  //   return {
+  //     title: "",
+  //     description: "",
+  //   };
+  // }
   return {
     title: post.title,
     description: post.desc,
@@ -43,6 +56,7 @@ const SinglePostPage = async ({ params }) => {
       )}
       <div className={styles.textContainer}>
         <h1 className={styles.title}>{post?.title}</h1>
+
         <div className={styles.detail}>
           {post && (
             <Suspense fallback={<div>Loading...</div>}>
@@ -52,7 +66,11 @@ const SinglePostPage = async ({ params }) => {
           <div className={styles.detailText}>
             <span className={styles.detailTitle}>published</span>
             <span className={styles.detailValue}>
-              {post.createdAt.toString().slice(0, 16)}
+              {/* To fix the TypeError, added a null check before accessing the 'createdAt' property of the 'post' object. */}
+              {/* {post && post.createdAt && post.createdAt.toString().slice(0, 16)} */}
+
+              {/* without null check */}
+              {post.createdAt.toString().slice(4, 16)}
             </span>
           </div>
         </div>
